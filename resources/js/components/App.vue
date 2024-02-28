@@ -1,20 +1,18 @@
 <template>
-  <div class="mx-auto container">
-    <div class="pt-2">
-      <h2 class="text-center display-1">Task List</h2>
-      <AddTask v-on:reloadList="getTasks()"/>
-    </div>
-    <TasksList :tasks="tasks" v-on:reloadList="getTasks()"/>
+  <div class="mx-auto container">   
+      <Calendar></Calendar>
   </div>
 </template>
 <script>
 import AddTask from './AddTask.vue'
 import TasksList from './TasksList.vue'
+import Calendar from './Calendar.vue'
 
   export default {
     components:{
       AddTask,
       TasksList,
+      Calendar,
     },
     data: function () {
       return {
@@ -23,7 +21,7 @@ import TasksList from './TasksList.vue'
     },
     methods: {
       getTasks() {
-        axios.get('/api/tasks')
+        axios.get(`/api/tasks/${this.tasks.date}`,this.tasks.date)
         .then(response => {
           this.tasks = response.data
         })
@@ -31,9 +29,6 @@ import TasksList from './TasksList.vue'
           console.log(error);
         })
       }
-    },
-    created(){
-      this.getTasks();
     },
   }
 </script>

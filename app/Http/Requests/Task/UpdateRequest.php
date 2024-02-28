@@ -22,10 +22,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:5 |max:100',
-            'description' => 'required|min:5 |max:255',
-            'date' => 'required|date',
-            'status' => 'nullable|boolean'
+            'status' => 'required| nullable|boolean'
         ];
     }
 }

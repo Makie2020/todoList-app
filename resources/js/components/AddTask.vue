@@ -34,9 +34,7 @@ export default {
     }
   },
   methods: {
-    addTask() {
-      console.log(this.task.name)
-      
+    addTask() {     
       axios.post('/api/task/store', {
         name:this.task.name,
         description:this.task.description,

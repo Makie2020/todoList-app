@@ -6,8 +6,11 @@ use App\Models\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreRequest;
 use App\Http\Requests\Task\UpdateRequest;
+use Carbon\Carbon;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Types\Collection;
 
 class TaskController extends Controller
@@ -15,9 +18,11 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($date)
     {
-        return Task::all();
+        //Retrieve all records from the Task model in the database on a specific date.
+        $tasks = Task::whereDate('date', new Carbon($date))->get();
+        return $tasks;
     }
 
     /**
@@ -33,8 +38,12 @@ class TaskController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        // Create a new Task instance
         $data = new Task();
+
+        // Extract task data from the request
         $data = $request->all();
+        // Create the task using the extracted data
         return Task::create([
             'name' => $data['name'],
             'description' => $data['description'],
@@ -60,19 +69,24 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request,  $id)
+    public function update(UpdateRequest $request, $id)
     {
-        //Check if Task exists on database
-        $existingItem = Task::find($id);  
-        
-        //If it exsist then change the status of the task and update the colomn updated at
-        if($existingItem){
-           $existingItem->status = $request->task['status'] ? true : false;
-           $existingItem->updated_at = Task::now() ;
-           $existingItem->save();
-           return $existingItem;
-        } 
-        return "Task not found";;
+        // Find the task by its ID
+        $task = Task::find($id);
+
+        // If the task doesn't exist, return an error message
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        // Update the task with the fields provided in the request
+        $status = $task->update($request->only(['name', 'description', 'date', 'status']));
+
+        // Return a response based on the update status
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Task Updated!' : 'Error Updating Task'
+        ]);
     }
 
     /**
@@ -80,12 +94,14 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //Check if Task exists on the database
+        // Find the task by its ID
         $existingTask = Task::find($id);
+        // If the task exists, delete it and return a success message
         if ($existingTask) {
             $existingTask->delete();
-            return "Task deleted";
+            return response()->json(['message' => 'Task deleted'], 200);
         }
-        return "Task not found";
+       // If the task doesn't exist, return a not found error message
+        return response()->json(['error' => 'Task not found'], 404);
     }
 }

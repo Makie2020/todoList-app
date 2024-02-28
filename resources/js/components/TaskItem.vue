@@ -4,9 +4,9 @@
     <td>{{ task.name }}</td>
     <td>{{ task.description }}</td>
     <td>{{ task.date }}</td>
-    <td class="d-flex gap-2 p-3">
-      <input type="checkbox" @change="updateStatus()" v-model="task.completed" class="mr-3" />
-      <span :class="[task.status ? 'completed' : '', 'task']"> {{ task.status ? 'Completed' : 'Open' }}</span>
+    <td>
+      <input type="checkbox" @change="updateStatus($event)" :checked="task.status" :value="task.status" v-on:input="task.status = $event.target.checked"/>
+      <label for="checkbox" class="pl-4">{{ task.status ? 'Completed' : 'Open' }}</label>
     </td>
     <td>
       <button class="btn btn-danger" @click="removeTask()">
@@ -21,12 +21,9 @@
 export default {
   props: ['task'],
   methods: {
-    updateStatus() {
+    updateStatus($event) {
       axios.put(`api/task/${this.task.id}`, {
-        name: this.task.name,
-        description: this.task.description,
-        date: this.task.date,
-        status: this.task.status
+        status: $event.target.checked
       })
         .then(response => {
           if (response.status == 200) {
