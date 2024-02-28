@@ -6,7 +6,9 @@ use App\Models\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreRequest;
 use App\Http\Requests\Task\UpdateRequest;
-use Illuminate\Http\Request;
+use GuzzleHttp\Promise\Create;
+use Illuminate\Http\JsonResponse;
+use phpDocumentor\Reflection\Types\Collection;
 
 class TaskController extends Controller
 {
@@ -15,8 +17,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
-        return view('tasks/index', compact('tasks'));
+        return Task::all();
     }
 
     /**
@@ -32,9 +33,13 @@ class TaskController extends Controller
      */
     public function store(StoreRequest $request)
     {
-       $data = $request->only('name', 'description', 'date');
-       Task::create($data);
-       return redirect()->back()->with('success', 'The task was added succesfully');
+        $data = new Task();
+        $data = $request->all();
+        return Task::create([
+            'name' => $data['name'],
+            'description' => $data['description'],
+            'date' => $data['date'],
+        ]);
     }
 
     /**
@@ -49,30 +54,38 @@ class TaskController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Task $task)
-    {   
-
-        return view('tasks.edit', [
-            'task' => $task
-        ]);
+    {
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, Task $task)
+    public function update(UpdateRequest $request,  $id)
     {
-        $data = $request->only('name', 'description', 'date', 'status');
-        $task->update($data);
-
-        return redirect()->back()->with('success', 'Task updated');
+        //Check if Task exists on database
+        $existingItem = Task::find($id);  
+        
+        //If it exsist then change the status of the task and update the colomn updated at
+        if($existingItem){
+           $existingItem->status = $request->task['status'] ? true : false;
+           $existingItem->updated_at = Task::now() ;
+           $existingItem->save();
+           return $existingItem;
+        } 
+        return "Task not found";;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
-        $task->delete();
-        return redirect()->back();
+        //Check if Task exists on the database
+        $existingTask = Task::find($id);
+        if ($existingTask) {
+            $existingTask->delete();
+            return "Task deleted";
+        }
+        return "Task not found";
     }
 }
