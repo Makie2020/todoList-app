@@ -7,11 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreRequest;
 use App\Http\Requests\Task\UpdateRequest;
 use Carbon\Carbon;
-use GuzzleHttp\Promise\Create;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use phpDocumentor\Reflection\Types\Collection;
 
 class TaskController extends Controller
 {
@@ -26,46 +21,12 @@ class TaskController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreRequest $request)
     {
-        // Create a new Task instance
-        $data = new Task();
-        $data = Task::create($request->validated());
-        // Extract task data from the request
-        $data = $request->all();
-        // Create the task using the extracted data
-        Task::create([
-            'name' => $data['name'],
-            'description' => $data['description'],
-            'date' => $data['date'],
-        ]);
-
+        Task::create($request->validated());
         return['message' => 'Task Created'];
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Task $task)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Task $task)
-    {
     }
 
     /**
