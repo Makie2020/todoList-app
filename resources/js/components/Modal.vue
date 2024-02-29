@@ -10,7 +10,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <AddTask></AddTask>
+            <AddTask v-on:reloadList="reloadList()"></AddTask>
           </div>
         </div>
       </div>
@@ -26,8 +26,12 @@ import AddTask from './AddTask.vue';
     },
     methods: {
       closeModal() {
-        this.$emit('close-modal-event');
+        this.$emit('closeModal');
       },
+      reloadList(){
+        this.$emit('closeModal');
+        this.$emit('reloadList');
+      }
     }
   }
 </script>

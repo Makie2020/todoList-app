@@ -28,4 +28,20 @@ class StoreRequest extends FormRequest
             'status' => 'nullable|boolean'
         ];
     }
+    public function messages()
+    {
+        return [
+            'name.required' => 'A task name is required',
+            'name.min' => 'A task name must be at least 5 characters',
+            'name.max' => 'A task name cannot be more than 100 characters',
+
+ 
+            'description.required' => 'The description is required',
+            'description.min' => 'he description must be at least 5 characters',
+            'description.max' => 'The description cannot be more than 255 characters',
+ 
+            'date.required' => 'The date is required',
+ 
+        ];
+    }
 }

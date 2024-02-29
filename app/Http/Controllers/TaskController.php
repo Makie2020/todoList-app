@@ -40,15 +40,17 @@ class TaskController extends Controller
     {
         // Create a new Task instance
         $data = new Task();
-
+        $data = Task::create($request->validated());
         // Extract task data from the request
         $data = $request->all();
         // Create the task using the extracted data
-        return Task::create([
+        Task::create([
             'name' => $data['name'],
             'description' => $data['description'],
             'date' => $data['date'],
         ]);
+
+        return['message' => 'Task Created'];
     }
 
     /**

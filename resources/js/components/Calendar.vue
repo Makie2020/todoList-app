@@ -14,7 +14,7 @@
 
   </div>
   <TasksList :tasks="tasks" v-on:reloadList="getTasks()"></TasksList>
-  <modal v-if="displayModal" @close-modal-event="hideModal" />
+  <modal v-if="displayModal" v-on:closeModal="hideModal()" v-on:reloadList="getTasks()" ></modal>
 </template>
 
 <script>
